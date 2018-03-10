@@ -30,12 +30,12 @@ def register_points(image1, image2, points):
   return [register_point(image1, image2, pointi) for pointi in points]
 
 def register(images):
-  points = [utils.ask_points(images[0])]
-  for i in range(1, len(images)):
-    image1 = utils.read(images[i - 1])
-    image2 = utils.read(images[i])
-    point1 = points[i - 1]
-    point2 = register_points(image1, image2, point1)
+  points = [utils.ask_points(images[0])] #pregunta por los puntos
+  for i in range(1, len(images)): #desde 1 a n
+    image1 = utils.read(images[i - 1]) #toma imagen n-1
+    image2 = utils.read(images[i]) #toma imagen n
+    point1 = points[i - 1] #toma los puntos de la imagen n-1
+    point2 = register_points(image1, image2, point1) 
     points.append(point2)
   return points
 

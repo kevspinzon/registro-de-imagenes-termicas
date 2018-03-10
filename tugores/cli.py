@@ -23,6 +23,6 @@ class Cli:
     return self.points
 
 if __name__ == '__main__':
-  image = cv2.imread('./images/patient4/1_0.png', 0)
+  image = cv2.imread('./images/3_2.png', 0)
   cli = Cli(image)
   print(cli.ask_points())
