@@ -56,6 +56,13 @@ def register_point(image1, image2, point1, search_size = 100):
   i4 = ndimage.filters.gaussian_filter(image2, 3)
   i5 = ndimage.filters.gaussian_filter(image1, 3)
 
+  edgesObjetivo = feature.canny(image2,sigma=1)
+  edges = feature.canny(image1,sigma=1)
+
+
+  distOriginal = ndimage.morphology.distance_transform_edt(np.logical_not(edges))
+  distObjetivo = ndimage.morphology.distance_transform_edt(np.logical_not(edgesObjetivo))
+
 
     
   dyObjetivo, dxObjetivo = np.gradient(i4)
@@ -68,7 +75,7 @@ def register_point(image1, image2, point1, search_size = 100):
     
   distOriginal = ndimage.morphology.distance_transform_edt(i5)
 
-
+  errorall = []
   for i in range(w - half, w + half):
     for j in range(h - half, h + half):
       pointi = (i, j)
@@ -83,10 +90,14 @@ def register_point(image1, image2, point1, search_size = 100):
 
 
       #errori = E(0,thumb1, thumbi)
-      errori = np.sum(( np.power([thumbDyObjetivo - thumbDy],2)))+ np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) + np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*100 + np.sum(( np.power([thumbi - thumb1],2)))*0.5
+      errori = np.sum(( np.power([thumbDyObjetivo - thumbDy],2)))+ np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) + np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*200 +  np.sum(( np.power([thumbi - thumb1],2)))*5
+
+      # np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*100 +
+      errorall.append(int(errori))
       if errori <= error2:
         point2 = pointi
         error2 = errori
+  # print (errorall)
   return point2
 
 def register_points(image1, image2, points):
@@ -104,7 +115,6 @@ def register(images):
   return points
 
 if __name__ == '__main__':
-  print (cv2.__version__)
   path = sys.argv[1]
   images = utils.images(path)
   points = register(images)
