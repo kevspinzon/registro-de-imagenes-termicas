@@ -110,7 +110,7 @@ def register_point(image1, image2, point1, search_size = 100):
       
       print(errori)
 
->>>>>>> Stashed changes
+
       if errori <= error2:
         point2 = pointi
         error2 = errori
@@ -132,10 +132,7 @@ def register(images):
   return points
 
 if __name__ == '__main__':
-<<<<<<< Updated upstream
-=======
   #print (cv2.__version__)
->>>>>>> Stashed changes
   path = sys.argv[1]
   images = utils.images(path)
   points = register(images)
