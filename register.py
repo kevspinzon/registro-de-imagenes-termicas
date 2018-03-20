@@ -48,7 +48,7 @@ def compare(image1, image2):
   return np.sum((image1 - image2) ** 2)
 
 def register_point(image1, image2, point1, search_size = 100):
-  print(point1)
+  # print(point1)
   w, h = point1
   half = search_size // 2
   point2 = 0, 0
@@ -79,21 +79,38 @@ def register_point(image1, image2, point1, search_size = 100):
   for i in range(w - half, w + half):
     for j in range(h - half, h + half):
       pointi = (i, j)
+      
       thumb1 = utils.thumb(image1, point1)
       thumbi = utils.thumb(image2, pointi)
+      
       thumbDx = utils.thumb(dx,point1)
       thumbDxObjetivo = utils.thumb(dxObjetivo, pointi)
+      
       thumbDy = utils.thumb(dy,point1)
       thumbDyObjetivo = utils.thumb(dyObjetivo, pointi)
+      
       thumbDistOriginal = utils.thumb(distOriginal,point1)
       thumbDistObjetivo = utils.thumb(distObjetivo, pointi)
 
 
       #errori = E(0,thumb1, thumbi)
-      errori = np.sum(( np.power([thumbDyObjetivo - thumbDy],2)))+ np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) + np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*200 +  np.sum(( np.power([thumbi - thumb1],2)))*5
+
+      #errori = np.sum(( np.power([thumbDyObjetivo - thumbDy],2)))+ np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) + np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*200 +  np.sum(( np.power([thumbi - thumb1],2)))*5
 
       # np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*100 +
-      errorall.append(int(errori))
+      
+
+      errorGradiente= np.sum(( np.power([thumbDyObjetivo - thumbDy],2)))+ np.sum(( np.power([thumbDxObjetivo - thumbDx],2)))
+
+      errorDistancia = np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*200 
+
+      errorPunto = np.sum(( np.power([thumbi - thumb1],2)))*5
+
+      errori = errorGradiente + errorDistancia + errorPunto 
+      
+      print(errori)
+
+>>>>>>> Stashed changes
       if errori <= error2:
         point2 = pointi
         error2 = errori
@@ -111,10 +128,14 @@ def register(images):
     point1 = points[i - 1]
     point2 = register_points(image1, image2, point1)
     points.append(point2)
-  print (points)
+  #print (points)
   return points
 
 if __name__ == '__main__':
+<<<<<<< Updated upstream
+=======
+  #print (cv2.__version__)
+>>>>>>> Stashed changes
   path = sys.argv[1]
   images = utils.images(path)
   points = register(images)

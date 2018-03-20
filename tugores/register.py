@@ -21,6 +21,9 @@ def register_point(image1, image2, point1, search_size = 100):
       thumb1 = utils.thumb(image1, point1)
       thumbi = utils.thumb(image2, pointi)
       errori = compare(thumb1, thumbi)
+
+      print (errori)
+
       if errori <= error2:
         point2 = pointi
         error2 = errori
