@@ -108,7 +108,7 @@ def register_point(image1, image2, point1, search_size = 100):
 
       errori = errorGradiente + errorDistancia + errorPunto 
       
-      print(errori)
+      # print(errori)
 
 
       if errori <= error2:
@@ -120,8 +120,17 @@ def register_point(image1, image2, point1, search_size = 100):
 def register_points(image1, image2, points):
   return [register_point(image1, image2, pointi) for pointi in points]
 
-def register(images):
-  points = [utils.ask_points(images[0])]
+def register(images,args):
+  
+
+  if (len(args)>2):
+     file = np.genfromtxt(args[2])
+     data = [[( int(file[x][0]), int(file[x][1]))  for x in range(len(file))]]
+  else:
+    data = [utils.ask_points(images[0])]
+
+  points = data
+
   for i in range(1, len(images)):
     image1 = utils.read(images[i - 1])
     image2 = utils.read(images[i])
@@ -135,5 +144,5 @@ if __name__ == '__main__':
   #print (cv2.__version__)
   path = sys.argv[1]
   images = utils.images(path)
-  points = register(images)
+  points = register(images,sys.argv)
   utils.render_points(images, points)

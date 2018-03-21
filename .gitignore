@@ -1,2 +1,2 @@
-*.png
+/result/*
 /__pycache__/
