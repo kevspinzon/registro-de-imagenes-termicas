@@ -102,11 +102,11 @@ def register_point(image1, image2, point1, search_size = 100):
 
       errorGradiente= np.sum(( np.power([thumbDyObjetivo - thumbDy],2)))*2  + np.sum(( np.power([thumbDxObjetivo - thumbDx],2)))*2
 
-      # errorDistancia = np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*200 
+      # errorDistancia = np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))
 
       errorPunto = np.sum(( np.power([thumbi - thumb1],2)))*0.75
 
-      errori = errorGradiente + errorPunto 
+      errori = errorGradiente + errorPunto #+ errorDistancia
       
       # print(errori)
 

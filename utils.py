@@ -36,8 +36,13 @@ def images(path):
   return images
 
 def render_points(images, points):
+  folder="./result/"+ images[0].split('/')[-2]
+
+  if not os.path.exists(folder):
+    os.makedirs(folder)
   for image, points in zip(images, points):
     result = read(image)
     for point in points:
       result = rectangle(result, point)
-    cv2.imwrite(os.path.join('./result', image.split('/')[-1]), result)
+
+    cv2.imwrite(os.path.join(folder, image.split('/')[-1]), result)
