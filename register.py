@@ -56,12 +56,12 @@ def register_point(image1, image2, point1, search_size = 100):
   i4 = ndimage.filters.gaussian_filter(image2, 3)
   i5 = ndimage.filters.gaussian_filter(image1, 3)
 
-  edgesObjetivo = feature.canny(image2,sigma=1)
-  edges = feature.canny(image1,sigma=1)
+  # edgesObjetivo = feature.canny(image2,sigma=1)
+  # edges = feature.canny(image1,sigma=1)
 
 
-  distOriginal = ndimage.morphology.distance_transform_edt(np.logical_not(edges))
-  distObjetivo = ndimage.morphology.distance_transform_edt(np.logical_not(edgesObjetivo))
+  # distOriginal = ndimage.morphology.distance_transform_edt(np.logical_not(edges))
+  # distObjetivo = ndimage.morphology.distance_transform_edt(np.logical_not(edgesObjetivo))
 
 
     
@@ -71,9 +71,9 @@ def register_point(image1, image2, point1, search_size = 100):
   dy, dx = np.gradient(i5)
     # dz = dx + dy
     
-  distObjetivo = ndimage.morphology.distance_transform_edt(i4)
+  # distObjetivo = ndimage.morphology.distance_transform_edt(i4)
     
-  distOriginal = ndimage.morphology.distance_transform_edt(i5)
+  # distOriginal = ndimage.morphology.distance_transform_edt(i5)
 
   errorall = []
   for i in range(w - half, w + half):
@@ -89,8 +89,8 @@ def register_point(image1, image2, point1, search_size = 100):
       thumbDy = utils.thumb(dy,point1)
       thumbDyObjetivo = utils.thumb(dyObjetivo, pointi)
       
-      thumbDistOriginal = utils.thumb(distOriginal,point1)
-      thumbDistObjetivo = utils.thumb(distObjetivo, pointi)
+      # thumbDistOriginal = utils.thumb(distOriginal,point1)
+      # thumbDistObjetivo = utils.thumb(distObjetivo, pointi)
 
 
       #errori = E(0,thumb1, thumbi)
@@ -100,13 +100,13 @@ def register_point(image1, image2, point1, search_size = 100):
       # np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*100 +
       
 
-      errorGradiente= np.sum(( np.power([thumbDyObjetivo - thumbDy],2)))+ np.sum(( np.power([thumbDxObjetivo - thumbDx],2)))
+      errorGradiente= np.sum(( np.power([thumbDyObjetivo - thumbDy],2)))*2  + np.sum(( np.power([thumbDxObjetivo - thumbDx],2)))*2
 
-      errorDistancia = np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*200 
+      # errorDistancia = np.sum(( np.power([thumbDistObjetivo - thumbDistOriginal],2)))*200 
 
-      errorPunto = np.sum(( np.power([thumbi - thumb1],2)))*5
+      errorPunto = np.sum(( np.power([thumbi - thumb1],2)))*0.75
 
-      errori = errorGradiente + errorDistancia + errorPunto 
+      errori = errorGradiente + errorPunto 
       
       # print(errori)
 
@@ -131,8 +131,11 @@ def register(images,args):
 
   points = data
 
+  # print(images)
+
   for i in range(1, len(images)):
     image1 = utils.read(images[i - 1])
+    print(images[i])
     image2 = utils.read(images[i])
     point1 = points[i - 1]
     point2 = register_points(image1, image2, point1)
