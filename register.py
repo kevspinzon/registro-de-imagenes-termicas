@@ -99,13 +99,19 @@ def register_point(image1, image2, point1, search_size = 100, ops={}):
       thumbdisOri = utils.thumb(dist16Orig ,pointi)
       thumbdisObj = utils.thumb(dist16Objt ,point1)
 
-      errorIntensidades = + np.sum(( np.power([thumb1 - thumbi],2))) * ops.weightPixel
+
+
+      try:
+        errorIntensidades = + np.sum(( np.power([thumb1 - thumbi],2))) * ops.weightPixel      
+        errorGradiente =  np.sum(( np.power([thumbDyObjetivo - thumbDy],2))) + np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) * ops.weightGradient
+        errorDistancia = np.sum((np.power([thumbdisObj - thumbdisOri],2)))* ops.weightDistance
+
+        error1= errorIntensidades + errorDistancia + errorGradiente
+      except: 
+        error1= np.inf
+
+
       
-      errorGradiente =  np.sum(( np.power([thumbDyObjetivo - thumbDy],2))) + np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) * ops.weightGradient
-
-      errorDistancia = np.sum((np.power([thumbdisObj - thumbdisOri],2)))* ops.weightDistance
-
-      error1= errorIntensidades + errorDistancia + errorGradiente
       
       if error1 <= error2:
         point2 = pointi
