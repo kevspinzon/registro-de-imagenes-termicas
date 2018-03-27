@@ -6,7 +6,7 @@ from cli import Cli
 
 def read(path):
   clahe = cv2.createCLAHE(clipLimit = 2.0, tileGridSize = (8, 8))
-  image = cv2.imread(path, 0)
+  image = cv2.imread(path, cv2.IMREAD_UNCHANGED)
   blurred = cv2.blur(image, (3, 3))
   return clahe.apply(blurred)
 
