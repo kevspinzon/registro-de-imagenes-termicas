@@ -45,7 +45,7 @@ def affin(i,a1=1,a2=0,a3=0,a4=1,t1=0,t2=0):
 def compare(image1, image2):
   return np.sum((image1 - image2) ** 2)
 
-def register_point(image1, image2, point1, search_size = 100):
+def register_point(image1, image2, point1, search_size = 100, ops={}):
   # print(point1)
   w, h = point1
   half = search_size // 2
@@ -53,11 +53,11 @@ def register_point(image1, image2, point1, search_size = 100):
   error2 = np.inf
   
   
-  #i4 = ndimage.filters.gaussian_filter(image2, 2)
-  #i5 = ndimage.filters.gaussian_filter(image1, 2)
+  i4 = ndimage.filters.gaussian_filter(image2, 2)
+  i5 = ndimage.filters.gaussian_filter(image1, 2)
   
-  edgesObjetivo = feature.canny(image2,sigma=0)
-  edges = feature.canny(image1,sigma=0)
+  edgesObjetivo = feature.canny(i4,sigma=0)
+  edges = feature.canny(i5,sigma=0)
 
 
 
@@ -87,8 +87,6 @@ def register_point(image1, image2, point1, search_size = 100):
   for i in range(w - half, w + half):
     for j in range(h - half, h + half):
       pointi = (i, j)
-
-
       
       thumb1 = utils.thumb(image1, point1)
       thumbi = utils.thumb(image2, pointi)
@@ -100,27 +98,29 @@ def register_point(image1, image2, point1, search_size = 100):
 
       thumbdisOri = utils.thumb(dist16Orig ,pointi)
       thumbdisObj = utils.thumb(dist16Objt ,point1)
-      
-      errorIntensidades = np.sum(( np.power([thumbDyObjetivo - thumbDy],2))) + np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) + np.sum(( np.power([thumb1 - thumbi],2))) + np.sum((np.power([thumbdisObj - thumbdisOri],2)))
-      #errorIntensidades = np.sum(( np.power([(thumb1 - thumbi) - (thumbDxObjetivo - thumbDx) - (thumbDyObjetivo - thumbDy)],2)))
 
-
-      #errorIntensidades = E(thumbi ,thumb1) 
+      errorIntensidades = + np.sum(( np.power([thumb1 - thumbi],2))) * ops.weightPixel
       
-      if errorIntensidades <= error2:
+      errorGradiente =  np.sum(( np.power([thumbDyObjetivo - thumbDy],2))) + np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) * ops.weightGradient
+
+      errorDistancia = np.sum((np.power([thumbdisObj - thumbdisOri],2)))* ops.weightDistance
+
+      error1= errorIntensidades + errorDistancia + errorGradiente
+      
+      if error1 <= error2:
         point2 = pointi
-        error2 = errorIntensidades
+        error2 = error1
   # print (errorall)
   return point2
 
-def register_points(image1, image2, points):
-  return [register_point(image1, image2, pointi) for pointi in points]
+def register_points(image1, image2, points,ops={}):
+  return [register_point(image1, image2, pointi,ops=ops) for pointi in points]
 
-def register(images,args):
+def register(images,ops):
   
 
-  if (len(args)>2):
-     file = np.genfromtxt(args[2])
+  if (ops.inputPoints != False):
+     file = np.genfromtxt(input)
      data = [[( int(file[x][0]), int(file[x][1]))  for x in range(len(file))]]
   else:
     data = [utils.ask_points(images[0])]
@@ -129,20 +129,32 @@ def register(images,args):
 
   print (points)
 
-  for i in range(1, len(images)):
-    print("image ",i)
+  lengImages=len(images)
+
+  for i in range(1, lengImages):
+    print("+Imagen:",i," de: ", lengImages-1)
     image1 = utils.read(images[i - 1])
     image2 = utils.read(images[i])
     point1 = points[i - 1]
-    point2 = register_points(image1, image2, point1)
+    point2 = register_points(image1, image2, point1,ops)
     points.append(point2)
   #print (points)
   return points
 
-if __name__ == '__main__':
-  #print (cv2.__version__)
-  path = sys.argv[1]
-  images = utils.images(path)
-  points = register(images,sys.argv)
 
-  utils.render_points(images, points)
+
+
+
+
+    
+
+
+if __name__ == '__main__':
+  ops,args = utils.optParse()
+  
+  print (args,ops)
+  
+  path = args[0]
+  images = utils.images(path)
+  points = register(images,ops)
+  utils.render_points(images, points,ops.exitFolder)

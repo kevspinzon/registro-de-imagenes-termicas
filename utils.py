@@ -3,6 +3,7 @@ import os
 import sys
 import cv2
 from cli import Cli
+from optparse import OptionParser
 
 def read(path):
   clahe = cv2.createCLAHE(clipLimit = 2.0, tileGridSize = (8, 8))
@@ -35,14 +36,57 @@ def images(path):
   images = [os.path.join(path, i) for i in images]
   return images
 
-def render_points(images, points):
-  folder="./result/"+ images[0].split('/')[-2]
+def render_points(images, points,path):
+  # folder="./result/"+ images[0].split('/')[-2]
 
-  if not os.path.exists(folder):
-    os.makedirs(folder)
+  if not os.path.exists(path):
+    os.makedirs(path)
   for image, points in zip(images, points):
     result = read(image)
     for point in points:
       result = rectangle(result, point)
 
-    cv2.imwrite(os.path.join(folder, image.split('/')[-1]), result)
+    cv2.imwrite(os.path.join(path, image.split('/')[-1]), result)
+
+def optParse():
+    parser = OptionParser(usage="usage: %prog [options] $image_folder",
+                          version="%prog 2.0")
+    
+    parser.add_option("-d", "--distance",
+                      action="store", # optional because action defaults to "store"
+                      dest="weightDistance",
+                      default= 1,
+                      type="float",
+                      help="Peso de la transformación distancia")
+
+    parser.add_option("-g", "--gradient",
+                      action="store", # optional because action defaults to "store"
+                      dest="weightGradient",
+                      default=1,
+                      type="float",
+                      help="Peso de la transformación gradiente",)
+
+    parser.add_option("-p", "--pixel",
+                      action="store", # optional because action defaults to "store"
+                      dest="weightPixel",
+                      default=1,
+                      type="float",
+                      help="Peso del error por pixel",)
+     
+    parser.add_option("-i", "--inputPoints",
+                      action="store", # optional because action defaults to "store"
+                      dest="inputPoints",
+                      default=False,
+                      help="Archivo con los puntos de entrada",)
+
+    parser.add_option("-e", "--Exit Folder",
+                      action="store", # optional because action defaults to "store"
+                      dest="exitFolder",
+                      default='./result/',
+                      help="Folder de salida",)
+    (options, args) = parser.parse_args()
+
+    if len(args) != 1:
+        parser.error("wrong number of arguments")
+
+    return options,args
