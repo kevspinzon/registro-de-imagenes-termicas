@@ -45,7 +45,7 @@ def affin(i,a1=1,a2=0,a3=0,a4=1,t1=0,t2=0):
 def compare(image1, image2):
   return np.sum((image1 - image2) ** 2)
 
-def register_point(image1, image2, point1, search_size = 100, ops={}):
+def register_point(point1,image1, image2, search_size = 100, ops={}):
   # print(point1)
   w, h = point1
   half = search_size // 2
@@ -84,43 +84,6 @@ def register_point(image1, image2, point1, search_size = 100, ops={}):
 
   point2= [int(result.x[0]),int(result.x[1])]
 
-  #print ("image1",image1.max())
-  #print ("gradient",dy.max())
-  #print ("distObjetivo",dist16.max())
-  
-  
-  # errorall = []
-  # for i in range(w - half, w + half):
-  #   for j in range(h - half, h + half):
-  #     pointi = (i, j)
-      
-  #     thumb1 = utils.thumb(image1, point1)
-  #     thumbi = utils.thumb(image2, pointi)
-
-  #     thumbDx = utils.thumb(dx,point1)
-  #     thumbDxObjetivo = utils.thumb(dxObjetivo, pointi)
-  #     thumbDy = utils.thumb(dy,point1)
-  #     thumbDyObjetivo = utils.thumb(dyObjetivo, pointi)
-
-  #     thumbdisOri = utils.thumb(dist16Orig ,pointi)
-  #     thumbdisObj = utils.thumb(dist16Objt ,point1)
-
-
-
-  #     try:
-  #       errorIntensidades = + np.sum(( np.power([thumb1 - thumbi],2))) * ops.weightPixel      
-        
-  #       errorGradiente =  np.sum(( np.power([thumbDyObjetivo - thumbDy],2))) + np.sum(( np.power([thumbDxObjetivo - thumbDx],2))) * ops.weightGradient
-        
-  #       errorDistancia = np.sum((np.power([thumbdisObj - thumbdisOri],2)))* ops.weightDistance
-
-  #       error1= errorIntensidades + errorDistancia + errorGradiente
-  #     except: 
-  #       error1= np.inf      
-      
-  #     if error1 <= error2:
-  #       point2 = pointi
-  #       error2 = error1
   
   return point2
 
@@ -159,7 +122,7 @@ def calculateError(index,point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16
 
 
 def register_points(image1, image2, points,ops={}):
-  return [register_point(image1, image2, pointi,ops=ops) for pointi in points]
+ return [register_point(pointi,image1, image2,ops=ops) for pointi in points]
 
 def register(images,ops):
   
@@ -185,11 +148,6 @@ def register(images,ops):
     points.append(point2)
   #print (points)
   return points
-
-
-
-
-
 
     
 
