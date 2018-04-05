@@ -84,6 +84,14 @@ def optParse():
                       dest="exitFolder",
                       default='./result/',
                       help="Folder de salida",)
+
+    parser.add_option('--hard', 
+                        dest='operation', 
+                        action='store_const',
+                        const='hardmode', 
+                        default='optimize',
+                        help='Deternmina si se utiliza la busqueda intensiva. Por defecto utiliza  Bashhoping de  Scipy ')
+
     (options, args) = parser.parse_args()
 
     if len(args) != 1:

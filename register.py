@@ -45,12 +45,12 @@ def affin(i,a1=1,a2=0,a3=0,a4=1,t1=0,t2=0):
 def compare(image1, image2):
   return np.sum((image1 - image2) ** 2)
 
-def register_point(point1,image1, image2, search_size = 100, ops={}):
+def register_point(point1,image1, image2):
   # print(point1)
-  w, h = point1
-  half = search_size // 2
-  point2 = 0, 0
-  error2 = np.inf
+  # w, h = point1
+  # half = search_size // 2
+  # point2 = 0, 0
+  # error2 = np.inf
   
   
   gaussianImage1 = ndimage.filters.gaussian_filter(image1, 2)
@@ -78,16 +78,38 @@ def register_point(point1,image1, image2, search_size = 100, ops={}):
   dy, dx = np.gradient(image1)
   
 
-  # print(point1)
+  if (ops.operation=='optimize'):
+    result = scipy.optimize.basinhopping(calculateError, point1 , minimizer_kwargs={'args':(point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16Orig,dist16Objt), 'method':'Nelder-Mead'})
+    point2= [int(result.x[0]),int(result.x[1])]
 
-  result = scipy.optimize.basinhopping(calculateError, point1 , minimizer_kwargs={'args':(point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16Orig,dist16Orig,ops), 'method':'Nelder-Mead'})
+  else:
+    point2 = hardmodeSearch(point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16Orig,dist16Objt)
 
-  point2= [int(result.x[0]),int(result.x[1])]
 
+
+  
   
   return point2
 
-def calculateError(index,point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16Orig,dist16Objt,ops):
+def  hardmodeSearch(point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16Orig,dist16Objt,search_size=100):
+  w, h = point1
+  half = search_size // 2
+  point2 = 0, 0
+  error2 = np.inf
+  for i in range(w - half, w + half):
+    for j in range(h - half, h + half):
+      pointi =[i,j]
+      errori = calculateError(pointi,point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16Orig,dist16Objt)
+
+      # print (errori)
+
+      if errori <= error2:
+        point2 = pointi
+        error2 = errori
+  
+  return point2
+
+def calculateError(index,point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16Orig,dist16Objt):
   
 
 
@@ -121,10 +143,10 @@ def calculateError(index,point1,image1,image2,dx,dxObjetivo,dy,dyObjetivo,dist16
   return error1
 
 
-def register_points(image1, image2, points,ops={}):
- return [register_point(pointi,image1, image2,ops=ops) for pointi in points]
+def register_points(image1, image2, points):
+ return [register_point(pointi,image1, image2) for pointi in points]
 
-def register(images,ops):
+def register(images):
   
 
   if (ops.inputPoints != False):
@@ -141,10 +163,12 @@ def register(images,ops):
 
   for i in range(1, lengImages):
     print("+Imagen:",i," de: ", lengImages-1)
+    
+
     image1 = utils.read(images[i - 1])
     image2 = utils.read(images[i])
     point1 = points[i - 1]
-    point2 = register_points(image1, image2, point1,ops)
+    point2 = register_points(image1, image2, point1)
     points.append(point2)
   #print (points)
   return points
@@ -153,11 +177,11 @@ def register(images,ops):
 
 
 if __name__ == '__main__':
+  global ops
   ops,args = utils.optParse()
-  
   print (args,ops)
   
   path = args[0]
   images = utils.images(path)
-  points = register(images,ops)
+  points = register(images)
   utils.render_points(images, points,ops.exitFolder)
