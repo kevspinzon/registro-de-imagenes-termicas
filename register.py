@@ -173,14 +173,15 @@ def register(images):
   #print (points)
   return points
 
-    
+def init():
+  global ops
+  global args
+  ops,args = utils.optParse()
 
 
 if __name__ == '__main__':
-  global ops
-  ops,args = utils.optParse()
+  init()
   print (args,ops)
-  
   path = args[0]
   images = utils.images(path)
   points = register(images)

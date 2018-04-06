@@ -3,6 +3,7 @@ import os
 import sys
 import cv2
 from cli import Cli
+import register
 from optparse import OptionParser
 
 def read(path):
@@ -12,21 +13,26 @@ def read(path):
   return clahe.apply(blurred)
 
 def ask_points(image):
-  cli = Cli(read(image))
+  register.init()
+  cli = Cli(read(image),register.ops.horizontalLenght,register.ops.verticalLenght)
   return cli.ask_points()
 
 def rectangle(image, point, thumb_size = 30):
   w, h = point
   image = image.copy()
-  half = thumb_size // 2
-  upper = h - half, w - half
-  lower = h + half, w + half
+  # half = thumb_size // 2
+  wHalf=register.ops.verticalLenght // 2
+  hHalf=register.ops.horizontalLenght // 2
+  upper = h - hHalf, w - wHalf
+  lower = h + hHalf, w + wHalf
   return cv2.rectangle(image, upper, lower, 255, 2)
 
 def thumb(image, point, thumb_size = 30):
   w, h = point
-  half = thumb_size // 2
-  return image[w - half : w + half, h - half: h + half].copy()
+  # half = thumb_size // 2
+  uHalf = register.ops.horizontalLenght // 2
+  lHalf = register.ops.verticalLenght // 2
+  return image[w - lHalf : w + lHalf, h - uHalf: h + uHalf].copy()
 
 def images(path):
   pattern = '([0-9|a-z]+)'
@@ -79,7 +85,7 @@ def optParse():
                       default=False,
                       help="Archivo con los puntos de entrada",)
 
-    parser.add_option("-e", "--Exit Folder",
+    parser.add_option("-e", "--Exit_Folder",
                       action="store", # optional because action defaults to "store"
                       dest="exitFolder",
                       default='./result/',
@@ -91,6 +97,20 @@ def optParse():
                         const='hardmode', 
                         default='optimize',
                         help='Deternmina si se utiliza la busqueda intensiva. Por defecto utiliza  Bashhoping de  Scipy ')
+
+    parser.add_option("--vl",
+                      action="store", # optional because action defaults to "store"
+                      dest="verticalLenght",
+                      default=30,
+                      type="int",
+                      help="Longitud vertical de la ventana. Default = 30")
+
+    parser.add_option("--hl",
+                      action="store", # optional because action defaults to "store"
+                      dest="horizontalLenght",
+                      default=30,
+                      type="int",
+                      help="Longitud vertical de la ventana. Default =30",)
 
     (options, args) = parser.parse_args()
 
