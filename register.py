@@ -94,7 +94,7 @@ def register(images):
   
 
   if (ops.inputPoints != False):
-     file = np.genfromtxt(input)
+     file = np.genfromtxt(ops.inputPoints)
      data = [[( int(file[x][0]), int(file[x][1]))  for x in range(len(file))]]
   else:
     data = [utils.ask_points(images[0])]
