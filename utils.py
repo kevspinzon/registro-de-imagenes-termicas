@@ -7,13 +7,13 @@ import register
 from optparse import OptionParser
 
 def read(path):
+  register.init()
   clahe = cv2.createCLAHE(clipLimit = 2.0, tileGridSize = (8, 8))
   image = cv2.imread(path, cv2.IMREAD_UNCHANGED)
   blurred = cv2.blur(image, (3, 3))
   return clahe.apply(blurred)
 
 def ask_points(image):
-  register.init()
   cli = Cli(read(image),register.ops.horizontalLenght,register.ops.verticalLenght)
   return cli.ask_points()
 
