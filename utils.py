@@ -61,7 +61,7 @@ def optParse():
     parser.add_option("-d", "--distance",
                       action="store", # optional because action defaults to "store"
                       dest="weightDistance",
-                      default= 1,
+                      default= 1.35,
                       type="float",
                       help="Peso de la transformación distancia")
 
@@ -101,14 +101,14 @@ def optParse():
     parser.add_option("--vl",
                       action="store", # optional because action defaults to "store"
                       dest="verticalLenght",
-                      default=30,
+                      default=50,
                       type="int",
                       help="Longitud vertical de la ventana. Default = 30")
 
     parser.add_option("--hl",
                       action="store", # optional because action defaults to "store"
                       dest="horizontalLenght",
-                      default=30,
+                      default=50,
                       type="int",
                       help="Longitud vertical de la ventana. Default =30",)
 
