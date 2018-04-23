@@ -91,11 +91,11 @@ def optParse():
                       default='./result/',
                       help="Folder de salida",)
 
-    parser.add_option('--hard', 
+    parser.add_option('--optimize', 
                         dest='operation', 
                         action='store_const',
-                        const='hardmode', 
-                        default='optimize',
+                        const='optimize', 
+                        default='hardmode',
                         help='Deternmina si se utiliza la busqueda intensiva. Por defecto utiliza  Bashhoping de  Scipy ')
 
     parser.add_option("--vl",

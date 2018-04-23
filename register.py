@@ -125,7 +125,7 @@ def init():
 
 if __name__ == '__main__':
   init()
-  print (args,ops)
+  # print (args,ops)
   path = args[0]
   images = utils.images(path)
   points = register(images)

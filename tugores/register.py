@@ -22,7 +22,7 @@ def register_point(image1, image2, point1, search_size = 100):
       thumbi = utils.thumb(image2, pointi)
       errori = compare(thumb1, thumbi)
 
-      print (errori)
+      # print (errori)
 
       if errori <= error2:
         point2 = pointi
@@ -34,6 +34,7 @@ def register_points(image1, image2, points):
 
 def register(images):
   points = [utils.ask_points(images[0])] #pregunta por los puntos en la imagen 0
+  print (points[0])
   for i in range(1, len(images)): #desde 1 a n/images
     image1 = utils.read(images[i - 1]) #toma imagen n-1
     image2 = utils.read(images[i]) #toma imagen n
