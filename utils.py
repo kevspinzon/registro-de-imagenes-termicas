@@ -3,6 +3,7 @@ import os
 import sys
 import cv2
 from cli import Cli
+import numpy as np
 import register
 from optparse import OptionParser
 
@@ -54,6 +55,18 @@ def render_points(images, points,path):
 
     cv2.imwrite(os.path.join(path, image.split('/')[-1]), result)
 
+def render_pointsHist(images,t_images, points,path):
+  # folder="./result/"+ images[0].split('/')[-2]
+  i = 0
+  if not os.path.exists(path):
+    os.makedirs(path)
+  for image, points in zip(images, points):
+    result = np.copy(t_images[i])
+    i=i+1
+    for point in points:
+      result = rectangle(result, point)
+
+    cv2.imwrite(os.path.join(path, image.split('/')[-1]), result)
 def optParse():
     parser = OptionParser(usage="usage: %prog [options] $image_folder",
                           version="%prog 2.0")

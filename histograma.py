@@ -6,6 +6,7 @@ from skimage import feature
 import matplotlib.pyplot as plt
 import sys
 import cv2
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -115,97 +116,53 @@ def register(images):
 
   points = data
 
+  t_images = []
+
   print (points)
+
   lengImages=len(images)
+  theta = 350
   
-
-
-  imageo = utils.read(images[1])
-  image1 = utils.read(images[1])
-  image2 = utils.read(images[lengImages -1])
-  ha,bin_edgesa = np.histogram(image1,256)
-  hr,bin_edgesr = np.histogram(image2,256)
-
-  K = ha.size
-  Pa = CDF(ha)
-  Pr = CDF(hr)
-  fhs = np.zeros(K)
-  for a in range(K):
-      j=K-1
-      while True:
-          fhs[a] = j
-          j=j-1
-          print (j)
-          if (j < 0 or Pa[a] > Pr[j]):
-              break
-              
-
-
-
-  h,w = image1.shape
-  for i in range(h):
-      for j in range(w):
-          inda=np.searchsorted(bin_edgesa,image1[i][j])
-          indr=fhs[inda-1]
-          image1[i][j] = bin_edgesr[int(indr-1)]
-
-
-  har,bin_edgesa = np.histogram(image1,256)
-
-
-
-  plt.subplot(141)
-  plt.title("funcion resultante FHS")
-  plt.plot(fhs)
-
-  plt.subplot(142)
-  plt.title("Histograma original")
-  plt.plot(ha)
-
-  plt.subplot(143)
-  plt.title("Histograma Objetivo")
-  plt.plot(hr)
-  
-  plt.subplot(144)
-  plt.title("Histograma original transformado")
-  plt.plot(har)
-  plt.show()
-
-
-  plt.subplot(141)
-  plt.title("imagen original")
-  plt.imshow(imageo, cmap="gray")
-
-  plt.subplot(142)
-  plt.title("imagen objetivo")
-  plt.imshow(image2, cmap="gray")
-
-  plt.subplot(143)
-  plt.title("imagen Resultante")
-  plt.imshow(image1, cmap="gray")
-  
-  plt.subplot(144)
-  plt.title("Histograma original transformado")
-  plt.plot(har)
-  plt.show()
-
-
-
-##################################Histograma###################################
-
-
-
   for i in range(1, lengImages):
     print("+Imagen:",i," de: ", lengImages-1)
-    
 
-    image1 = utils.read(images[i - 1])
-    image2 = utils.read(images[i])
+    if (i == 1):
+      image1 = utils.read(images[i - 1])
+    else:
+      image1 = np.copy(image2)
+    if (i%2 == 0):
+      image2 = affin(image1,np.cos(np.pi/theta),np.sin(np.pi/theta),-np.sin(np.pi/theta),np.cos(np.pi/theta),2,2)
+    else:
+      image2 = affin(image1,1,0,0,1,2,2)
+    t_images.append(image2)
+    ha,bin_edgesa = np.histogram(image1,256)
+    hr,bin_edgesr = np.histogram(image2,256)
+
+    K = ha.size
+    Pa = CDF(ha)
+    Pr = CDF(hr)
+    fhs = np.zeros(K)
+    for a in range(K):
+      j=K-1
+      while True:
+        fhs[a] = j
+        j=j-1
+        if (j < 0 or Pa[a] > Pr[j]):
+          break
+          
+          
+    h,w = image1.shape
+    for ip in range(h):
+      for jp in range(w):
+        inda=np.searchsorted(bin_edgesa,image1[ip][jp])
+        indr=fhs[inda-1]
+        image1[ip][jp] = bin_edgesr[int(indr-1)]
+
     point1 = points[i - 1]
     point2 = register_points(image1, image2, point1)
     points.append(point2)
-  #print (points)
-  return points
+
+  return points,t_images
 
 def init():
   global ops
@@ -218,5 +175,7 @@ if __name__ == '__main__':
   # print (args,ops)
   path = args[0]
   images = utils.images(path)
-  points = register(images)
-  utils.render_points(images, points,ops.exitFolder)
+  points,t_images = register(images)
+  print (images)
+  print (t_images)
+  utils.render_pointsHist(images,t_images, points,ops.exitFolder)
