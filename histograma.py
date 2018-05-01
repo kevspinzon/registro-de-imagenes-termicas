@@ -130,10 +130,11 @@ def register(images):
       image1 = utils.read(images[i - 1])
     else:
       image1 = np.copy(image2)
-    if (i%2 == 0):
-      image2 = affin(image1,np.cos(np.pi/theta),np.sin(np.pi/theta),-np.sin(np.pi/theta),np.cos(np.pi/theta),2,2)
-    else:
-      image2 = affin(image1,1,0,0,1,2,2)
+    
+    # image2 = affin(image1,np.cos(np.pi/theta),-np.sin(np.pi/theta),np.sin(np.pi/theta),np.cos(np.pi/theta),-2,-2)
+        # image2 = affin(image1,np.cos(np.pi/theta),-np.sin(np.pi/theta),np.sin(np.pi/theta),np.cos(np.pi/theta),-2,-2)
+    image2 = affin(image1,1,0,0,1,-2,-2)
+
     t_images.append(image2)
     ha,bin_edgesa = np.histogram(image1,256)
     hr,bin_edgesr = np.histogram(image2,256)
@@ -176,6 +177,7 @@ if __name__ == '__main__':
   path = args[0]
   images = utils.images(path)
   points,t_images = register(images)
-  print (images)
-  print (t_images)
+  # print (images)
+  # print (t_images)
+  print (points)
   utils.render_pointsHist(images,t_images, points,ops.exitFolder)
